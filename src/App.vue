@@ -42,6 +42,7 @@
         :parcelle="choixParcelle"
         :batpar="choixBatPar"
         :rue="choixRue"
+        :ssServer="ssServer"
       ></ObjetChoix> 
     </v-main>
   </v-app>
@@ -55,6 +56,11 @@ const choixBatiment = ref<string>('oui')
 const choixParcelle = ref<string>('oui')
 const choixBatPar = ref<string>('oui')
 const choixRue = ref<string>('oui')
+
+const ssServer = ref<string>('')
+  if (import.meta.env.DEV) {
+      ssServer.value = 'https://mygolux.lausanne.ch'    
+  }
 
   //
 </script>

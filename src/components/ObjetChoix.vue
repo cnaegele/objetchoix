@@ -11,19 +11,19 @@
       <v-tabs-window v-model="tabchoisi">
 
         <v-tabs-window-item value="batiment" v-if="props.batiment === 'oui'">
-            <BatimentChoix></BatimentChoix>
+            <BatimentChoix typeCritere="nom" :ssServer="ssServer"></BatimentChoix>
         </v-tabs-window-item>
 
         <v-tabs-window-item value="parcelle" v-if="props.parcelle === 'oui'">
-            <ParcelleChoix></ParcelleChoix>
+            <ParcelleChoix :ssServer="ssServer"></ParcelleChoix>
         </v-tabs-window-item>
 
         <v-tabs-window-item value="batpar" v-if="props.batpar === 'oui'">
-            <BatimentParcelleChoix></BatimentParcelleChoix>
+            <BatimentParcelleChoix :ssServer="ssServer"></BatimentParcelleChoix>
         </v-tabs-window-item>
 
         <v-tabs-window-item value="rue" v-if="props.rue === 'oui'">
-            <RueChoix></RueChoix>
+            <RueChoix :ssServer="ssServer"></RueChoix>
         </v-tabs-window-item>
 
     </v-tabs-window>   
@@ -61,6 +61,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const tabchoisi = ref<string | null>(null)
+const ssServer = ref<string>(props.ssServer)
 
 </script>
 
