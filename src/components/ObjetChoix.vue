@@ -11,58 +11,123 @@
       <v-tabs-window v-model="tabchoisi">
 
         <v-tabs-window-item value="batiment" v-if="props.batiment === 'oui'">
-            <BatimentChoix typeCritere="nom" :ssServer="ssServer"></BatimentChoix>
+            <BatimentChoix 
+              typeCritere="nom" 
+              :ssServer="ssServer"
+              @choixBatiment="receptionBatiment"
+            ></BatimentChoix>
         </v-tabs-window-item>
 
         <v-tabs-window-item value="parcelle" v-if="props.parcelle === 'oui'">
-            <ParcelleChoix :ssServer="ssServer"></ParcelleChoix>
+            <ParcelleChoix
+              :ssServer="ssServer"
+              ></ParcelleChoix>
         </v-tabs-window-item>
 
         <v-tabs-window-item value="batpar" v-if="props.batpar === 'oui'">
-            <BatimentParcelleChoix :ssServer="ssServer"></BatimentParcelleChoix>
+            <BatimentParcelleChoix
+              :ssServer="ssServer"
+            ></BatimentParcelleChoix>
         </v-tabs-window-item>
 
         <v-tabs-window-item value="rue" v-if="props.rue === 'oui'">
-            <RueChoix :ssServer="ssServer"></RueChoix>
+            <RueChoix
+              :ssServer="ssServer"
+            ></RueChoix>
         </v-tabs-window-item>
-
-    </v-tabs-window>   
+      </v-tabs-window>   
     </v-card-text>
   </v-card>
+  <v-list max-height="400" v-if="modeChoix === 'multiple'">
+    <v-list-subheader>
+      {{ libelleListe }}&nbsp;&nbsp;&nbsp;&nbsp;
+      <v-btn
+        rounded="lg"
+        @click="choixTermine()"
+      >Choix terminé</v-btn>
+      </v-list-subheader>    
+      <v-list-item
+        v-for="objet in objetsChoisi"
+        :key="objet.id"
+        :value="objet.id"
+        :title="objet.nom"
+      >
+        <template v-slot:append>
+          <v-btn
+            color="grey-lighten-1"
+            icon="mdi-information"
+            variant="text"
+            @click="openFicheObjet(objet.id)"
+          ></v-btn>
+        </template>
+    </v-list-item>    
+  </v-list>
+
 </template>
 
 <script setup lang="ts">
+import type { Objet } from '@/axioscalls.js'
 import { ref } from 'vue'
 
-interface Props {
-  modeChoix?: string
-  batiment?: string
-  parcelle?: string
-  batpar?: string
-  rue?: string
-  adresse?: string
-  autre?: string
-  nombreMaximumRetour?: number
-  ssServer?: string
-  ssPage?: string
-}
+  interface Props {
+    modeChoix?: string
+    batiment?: string
+    parcelle?: string
+    batpar?: string
+    rue?: string
+    adresse?: string
+    autre?: string
+    nombreMaximumRetour?: number
+    ssServer?: string
+    ssPage?: string
+  }
 
-const props = withDefaults(defineProps<Props>(), {
-  modeChoix: 'unique',
-  batiment: "oui",
-  parcelle: "oui",
-  batpar: "oui",
-  rue: "oui",
-  adresse: "oui",
-  autre: "oui",
-  nombreMaximumRetour: 100,
-  ssServer: '',
-  ssPage: '/goeland/acteur/ajax/acteur_liste.php'
-})
+  const props = withDefaults(defineProps<Props>(), {
+    modeChoix: 'unique',
+    batiment: "oui",
+    parcelle: "oui",
+    batpar: "oui",
+    rue: "oui",
+    adresse: "oui",
+    autre: "oui",
+    nombreMaximumRetour: 100,
+    ssServer: '',
+    ssPage: '/goeland/acteur/ajax/acteur_liste.php'
+  })
 
-const tabchoisi = ref<string | null>(null)
-const ssServer = ref<string>(props.ssServer)
+  const tabchoisi = ref<string | null>(null)
+  const modeChoix = ref<string>(props.modeChoix)
+  const ssServer = ref<string>(props.ssServer)
+  const objetsChoisi = ref<Objet[]>([])
+  const libelleListe = ref<string>(`objets choisis (${objetsChoisi.value.length})`)
 
+  console.log(modeChoix.value)
+
+  const emit = defineEmits<{
+    (e: 'choixObjet', id: number, choix: string): void
+  }>()
+
+  const receptionBatiment = (id: number, jsonData: string) => {
+    if (modeChoix.value == 'unique') {
+      emit('choixObjet', id, jsonData)
+    } else {
+      const objet: Objet = JSON.parse(jsonData)
+      if (objetsChoisi.value.some(obj => obj.id === objet.id) === false) {
+        objetsChoisi.value.push(objet)
+        libelleListe.value = `objets choisis (${objetsChoisi.value.length})`
+      }
+      console.log(objetsChoisi.value)
+    }
+  }
+
+const choixTermine = () => {
+  emit('choixObjet', 0, JSON.stringify(objetsChoisi.value))
+  objetsChoisi.value = []
+}  
+
+const openFicheObjet = (idobjet: number): void => {
+  window.open(`https://golux.lausanne.ch/goeland/objet/getobjetinfo.php?idObjet=${idobjet}`, "goobjetinfo")
+}  
 </script>
 
 <style scoped>

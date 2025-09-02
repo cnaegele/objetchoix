@@ -35,14 +35,34 @@
               true-value="non"
             ></v-switch>
           </v-col>
+          <v-col>
+            <div class="d-flex">
+              <v-select
+                class="ml-4 mr-2"
+                label="type de choix"
+                :items="['unique', 'multiple']"
+                v-model="modeChoix"
+                @click="choixObjet = false"
+              ></v-select>
+            </div>
+          </v-col>
+          <v-col>
+          <v-btn
+              rounded="lg"
+              @click="choixObjet = !choixObjet"
+              class="text-none text-subtitle-1 text-medium-emphasis"
+          >Choix objets</v-btn>
+          </v-col>
         </v-row>
       </v-container>
-      <ObjetChoix
+      <ObjetChoix v-if="choixObjet"
+        :modeChoix="modeChoix"
         :batiment="choixBatiment"
         :parcelle="choixParcelle"
         :batpar="choixBatPar"
         :rue="choixRue"
         :ssServer="ssServer"
+        @choixObjet="receptionObjet"
       ></ObjetChoix> 
     </v-main>
   </v-app>
@@ -52,15 +72,21 @@
 import { ref, watch } from 'vue' 
 import ObjetChoix from '@/components/ObjetChoix.vue'
 
+const modeChoix = ref<string>('unique')
 const choixBatiment = ref<string>('oui')
 const choixParcelle = ref<string>('oui')
 const choixBatPar = ref<string>('oui')
 const choixRue = ref<string>('oui')
+const choixObjet = ref<boolean>(false)
 
 const ssServer = ref<string>('')
-  if (import.meta.env.DEV) {
-      ssServer.value = 'https://mygolux.lausanne.ch'    
-  }
+if (import.meta.env.DEV) {
+  ssServer.value = 'https://mygolux.lausanne.ch'    
+}
+
+const receptionObjet = (id: number, jsonData: string) => {
+  console.log(`Réception objet \njson: ${jsonData}`)
+}
 
   //
 </script>

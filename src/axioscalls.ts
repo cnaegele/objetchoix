@@ -1,15 +1,14 @@
 import axios from 'axios'
 import type { AxiosResponse, AxiosError } from 'axios'
-export interface Batiment {
-    objetid: number
-    objetnom: string
-    bactif: number
-    batimentstatut: string
+export interface Objet {
+    id: number
+    nom: string
+    idstatut: string
 }
 export interface ApiResponseBL {
   success: boolean
   message: string
-  data?: Batiment[]
+  data?: Objet[]
 }
 // Interface générique pour les réponses API
 interface ApiResponse<T> {
@@ -23,13 +22,13 @@ export async function getBatimentsListe(server: string = '', page: string, jsonC
     const urlacl: string = `${server}${page}`
     const params = new URLSearchParams([['jsoncriteres', jsonCriteres]])
     try {
-        const response: AxiosResponse<Batiment[]> = await axios.get(urlacl, { params })
+        const response: AxiosResponse<Objet[]> = await axios.get(urlacl, { params })
         const respData: ApiResponseBL= {
             "success": true,
             "message": `ok`,
             "data": response.data
         }
-        console.log(respData)
+        //console.log(respData)
         return respData
     } catch (error) {
         return traiteAxiosError(error as AxiosError)

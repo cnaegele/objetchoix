@@ -15,17 +15,38 @@
         style="width: 400px;"
         :rules="critereRule"
         @input="onInputCritere"
-    ></v-text-field> 
+    ></v-text-field>
+    
+    <v-list max-height="400">
+        <v-list-subheader>{{ libelleListe }}</v-list-subheader>    
+          <v-list-item
+            v-for="batiment in batimentsListeSelect"
+            :key="batiment.id"
+            :value="batiment.id"
+            :title="batiment.nom"
+            @click="choixBatiment(batiment)"
+          >
+            <template v-slot:append>
+              <v-btn
+                color="grey-lighten-1"
+                icon="mdi-information"
+                variant="text"
+                @mouseenter="infoMouseEnter()"
+                @mouseleave="infoMouseLeave()"
+                @click="openFicheObjet(batiment.id)"
+              ></v-btn>
+            </template>
+        </v-list-item>    
+    </v-list>
 
 </template>
 
 <script setup lang="ts">
-import type { Batiment, ApiResponseBL } from '@/axioscalls.js'
+import type { Objet, ApiResponseBL } from '@/axioscalls.js'
 import { ref, type Ref, watch } from 'vue'
 import { getBatimentsListe } from '@/axioscalls.js'
 
 interface Props {
-  modeChoix?: string
   typeCritere?: string
   nombreMaximumRetour?: number
   ssServer?: string
@@ -39,7 +60,6 @@ interface CritereRecherche {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  modeChoix: 'unique',
   typeCritere: 'nom',
   nombreMaximumRetour: 100,
   ssServer: '',
@@ -70,9 +90,10 @@ switch (typeCritereInitial) {
 const ssServer = ref<string>(props.ssServer)
 const ssPage = ref<string>(props.ssPage)
 
-
-
-
+const messageErreur = ref<string>('')
+const libelleListe = ref<string>('choix bâtiments (0)')
+const batimentsListeSelect = ref<Objet[]>([])
+let demandeInformation: boolean = false
 
 const inpTxtCritere = ref<any>(null)
 let bCritereEgidOK: boolean = true
@@ -123,8 +144,13 @@ const recherche = async (crType: string, critere: string, nombreMaximumRetour: n
         nombremaximumretour: nombreMaximumRetour
     }
   const response: ApiResponseBL = await getBatimentsListe(ssServer.value, ssPage.value, JSON.stringify(oCritere))
-  const acteursListe: Batiment[] = response.success && response.data ? response.data : []
-
+  const returnListe: Objet[] = response.success && response.data ? response.data : []
+  if (returnListe.length < nombreMaximumRetour) {
+    libelleListe.value = `Choix bâtiments (${returnListe.length})`
+  } else {
+    libelleListe.value = `Choix bâtiments (${returnListe.length}). Attention, plus de ${nombreMaximumRetour} bâtiments correspondent aux critères`
+  }
+  batimentsListeSelect.value = returnListe
 }
 
 const critereRule: ValidationRule[] = [
@@ -167,6 +193,28 @@ watch(() => typeCritere.value, (newValue: string): void => {
   }
   prepareRecherche()
 })
+
+const emit = defineEmits<{
+  (e: 'choixBatiment', id: number, choix: string): void
+}>()
+
+const choixBatiment = (batiment: Objet): void => {
+  if (!demandeInformation) {
+      emit('choixBatiment', batiment.id, JSON.stringify(batiment))
+  }
+}
+
+const infoMouseEnter = (): void => {
+  demandeInformation = true
+}
+
+const infoMouseLeave = (): void => {
+  demandeInformation = false
+}
+
+const openFicheObjet = (idobjet: number): void => {
+  window.open(`https://golux.lausanne.ch/goeland/objet/getobjetinfo.php?idObjet=${idobjet}`, "goobjetinfo")
+}
 </script>
 
 <style scoped>
