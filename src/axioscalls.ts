@@ -5,7 +5,7 @@ export interface Objet {
     nom: string
     idstatut: string
 }
-export interface ApiResponseBL {
+export interface ApiResponseOL {
   success: boolean
   message: string
   data?: Objet[]
@@ -17,13 +17,47 @@ interface ApiResponse<T> {
   data?: T[]
 }
 
-export async function getBatimentsListe(server: string = '', page: string, jsonCriteres: string = '{}'): Promise<ApiResponseBL> {
+export async function getBatimentsListe(server: string = '', page: string, jsonCriteres: string = '{}'): Promise<ApiResponseOL> {
     console.log(jsonCriteres)
-    const urlacl: string = `${server}${page}`
+    const urlol: string = `${server}${page}`
     const params = new URLSearchParams([['jsoncriteres', jsonCriteres]])
     try {
-        const response: AxiosResponse<Objet[]> = await axios.get(urlacl, { params })
-        const respData: ApiResponseBL= {
+        const response: AxiosResponse<Objet[]> = await axios.get(urlol, { params })
+        const respData: ApiResponseOL= {
+            "success": true,
+            "message": `ok`,
+            "data": response.data
+        }
+        //console.log(respData)
+        return respData
+    } catch (error) {
+        return traiteAxiosError(error as AxiosError)
+    }
+}
+
+export async function getParcellesListe(server: string = '', page: string, jsonCriteres: string = '{}'): Promise<ApiResponseOL> {
+    console.log(jsonCriteres)
+    const urlol: string = `${server}${page}`
+    const params = new URLSearchParams([['jsoncriteres', jsonCriteres]])
+    try {
+        const response: AxiosResponse<Objet[]> = await axios.get(urlol, { params })
+        const respData: ApiResponseOL= {
+            "success": true,
+            "message": `ok`,
+            "data": response.data
+        }
+        console.log(respData)
+        return respData
+    } catch (error) {
+        return traiteAxiosError(error as AxiosError)
+    }
+}
+
+export async function getCommunesListe(server: string = '', page: string): Promise<ApiResponseOL> {
+    const urlol: string = `${server}${page}`
+    try {
+        const response: AxiosResponse<Objet[]> = await axios.get(urlol)
+        const respData: ApiResponseOL= {
             "success": true,
             "message": `ok`,
             "data": response.data

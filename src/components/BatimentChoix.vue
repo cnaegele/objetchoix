@@ -2,9 +2,9 @@
     <div class="d-flex align-items-baseline">
         <span class="me-2 mt-3">critère selon :</span>
         <v-radio-group v-model="typeCritere" inline>
-        <v-radio label="nom" value="nom"></v-radio>
-        <v-radio label="n° ECA" value="eca"></v-radio>
-        <v-radio label="egid" value="egid"></v-radio>
+          <v-radio label="nom" value="nom" class="me-4"></v-radio>
+          <v-radio label="n° ECA" value="eca" class="me-4"></v-radio>
+          <v-radio label="egid" value="egid"></v-radio>
         </v-radio-group>            
     </div>  
     <v-text-field
@@ -42,8 +42,8 @@
 </template>
 
 <script setup lang="ts">
-import type { Objet, ApiResponseBL } from '@/axioscalls.js'
-import { ref, type Ref, watch } from 'vue'
+import type { Objet, ApiResponseOL } from '@/axioscalls.js'
+import { ref, watch } from 'vue'
 import { getBatimentsListe } from '@/axioscalls.js'
 
 interface Props {
@@ -113,7 +113,8 @@ const onInputCritere = (): void => {
 
   if (inpTxtCritere.value?.$el?.querySelector('input')) {
     inpTxtCritere.value.$el.querySelector('input').focus()
-  }}
+  }
+}
 
 const prepareRecherche = (): void => {
   const critere: string = txtCritere.value.trim()
@@ -143,7 +144,7 @@ const recherche = async (crType: string, critere: string, nombreMaximumRetour: n
         critere: critere,
         nombremaximumretour: nombreMaximumRetour
     }
-  const response: ApiResponseBL = await getBatimentsListe(ssServer.value, ssPage.value, JSON.stringify(oCritere))
+  const response: ApiResponseOL = await getBatimentsListe(ssServer.value, ssPage.value, JSON.stringify(oCritere))
   const returnListe: Objet[] = response.success && response.data ? response.data : []
   if (returnListe.length < nombreMaximumRetour) {
     libelleListe.value = `Choix bâtiments (${returnListe.length})`
