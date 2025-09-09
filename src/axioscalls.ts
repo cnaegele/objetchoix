@@ -46,14 +46,14 @@ export async function getParcellesListe(server: string = '', page: string, jsonC
             "message": `ok`,
             "data": response.data
         }
-        console.log(respData)
+        //console.log(respData)
         return respData
     } catch (error) {
         return traiteAxiosError(error as AxiosError)
     }
 }
 
-export async function getCommunesListe(server: string = '', page: string): Promise<ApiResponseOL> {
+export async function getCommunesParcelleListe(server: string = '', page: string): Promise<ApiResponseOL> {
     const urlol: string = `${server}${page}`
     try {
         const response: AxiosResponse<Objet[]> = await axios.get(urlol)
@@ -63,6 +63,40 @@ export async function getCommunesListe(server: string = '', page: string): Promi
             "data": response.data
         }
         //console.log(respData)
+        return respData
+    } catch (error) {
+        return traiteAxiosError(error as AxiosError)
+    }
+}
+
+export async function getRuesListe(server: string = '', page: string, jsonCriteres: string = '{}'): Promise<ApiResponseOL> {
+    console.log(jsonCriteres)
+    const urlol: string = `${server}${page}`
+    const params = new URLSearchParams([['jsoncriteres', jsonCriteres]])
+    try {
+        const response: AxiosResponse<Objet[]> = await axios.get(urlol, { params })
+        const respData: ApiResponseOL= {
+            "success": true,
+            "message": `ok`,
+            "data": response.data
+        }
+        console.log(respData)
+        return respData
+    } catch (error) {
+        return traiteAxiosError(error as AxiosError)
+    }
+}
+
+export async function getCommunesRueListe(server: string = '', page: string): Promise<ApiResponseOL> {
+    const urlol: string = `${server}${page}`
+    try {
+        const response: AxiosResponse<Objet[]> = await axios.get(urlol)
+        const respData: ApiResponseOL= {
+            "success": true,
+            "message": `ok`,
+            "data": response.data
+        }
+        console.log(respData)
         return respData
     } catch (error) {
         return traiteAxiosError(error as AxiosError)

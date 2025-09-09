@@ -14,13 +14,14 @@
             <BatimentChoix 
               typeCritere="nom" 
               :ssServer="ssServer"
-              @choixBatiment="receptionBatiment"
+              @choixBatiment="receptionObjet"
             ></BatimentChoix>
         </v-tabs-window-item>
 
         <v-tabs-window-item value="parcelle" v-if="props.parcelle === 'oui'">
             <ParcelleChoix
               :ssServer="ssServer"
+              @choixParcelle="receptionObjet"
               ></ParcelleChoix>
         </v-tabs-window-item>
 
@@ -33,6 +34,7 @@
         <v-tabs-window-item value="rue" v-if="props.rue === 'oui'">
             <RueChoix
               :ssServer="ssServer"
+              @choixRue="receptionObjet"
             ></RueChoix>
         </v-tabs-window-item>
       </v-tabs-window>   
@@ -107,7 +109,7 @@ import { ref } from 'vue'
     (e: 'choixObjet', id: number, choix: string): void
   }>()
 
-  const receptionBatiment = (id: number, jsonData: string) => {
+  const receptionObjet = (id: number, jsonData: string) => {
     if (modeChoix.value == 'unique') {
       emit('choixObjet', id, jsonData)
     } else {

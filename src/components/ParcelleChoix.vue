@@ -21,7 +21,7 @@
         <v-autocomplete
             v-if="typeCritere !== 'egrid'"
             v-model="idOFSCommune"
-            label="Choix commune"
+            label="Commune"
             :items="communesListeSelect"
             :custom-filter="communesCustomFilter"
             item-title="nom"
@@ -60,7 +60,7 @@
 import type { Objet, ApiResponseOL } from '@/axioscalls.js'
 import type { FilterFunction } from 'vuetify'
 import { ref, watch, onMounted } from 'vue'
-import { getParcellesListe, getCommunesListe} from '@/axioscalls.js'
+import { getParcellesListe, getCommunesParcelleListe} from '@/axioscalls.js'
 
 interface Props {
   typeCritere?: string
@@ -88,7 +88,7 @@ const props = withDefaults(defineProps<Props>(), {
   nombreMaximumRetour: 100,
   ssServer: '',
   ssPage: '/goeland/parcelle/axios/parcelle_liste.php',
-  ssPageCommune: '/goeland/parcelle/axios/commune_liste.php'
+  ssPageCommune: '/goeland/parcelle/axios/communes_liste.php'
 })
 
 const typeCritereInitial = props.typeCritere
@@ -149,7 +149,7 @@ const onInputCritere = (): void => {
 }
 
 const listeCommune = async (): Promise<void> => {
-  const response: ApiResponseOL = await getCommunesListe(ssServer.value, ssPageCommune.value,)
+  const response: ApiResponseOL = await getCommunesParcelleListe(ssServer.value, ssPageCommune.value,)
   const returnListe: Objet[] = response.success && response.data ? response.data : []
   communesListeSelect.value = returnListe
 }
