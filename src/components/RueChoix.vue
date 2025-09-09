@@ -11,6 +11,7 @@
             class="flex-0-0"
             style="width: 400px; min-width: 400px;"
             no-virtual
+            clearable
         ></v-autocomplete>        
         &nbsp;&nbsp;
         <v-autocomplete
@@ -24,6 +25,7 @@
             class="flex-0-0"
             style="width: 400px; min-width: 400px;"
             no-virtual
+            clearable
         ></v-autocomplete>
     </div>
 </template>

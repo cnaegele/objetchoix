@@ -10,6 +10,7 @@
     <div class="d-flex align-items-baseline">  
         <v-text-field
             dense
+            clearable
             v-model="txtCritere"
             ref="inpTxtCritere"
             :label="libelleInpCritere"

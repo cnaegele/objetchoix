@@ -9,6 +9,7 @@
     </div>  
     <v-text-field
         dense
+        clearable
         v-model="txtCritere"
         ref="inpTxtCritere"
         :label="libelleInpCritere"
@@ -54,9 +55,9 @@ interface Props {
 }
 
 interface CritereRecherche {
-  critere: string;
-  crtype: string;
-  nombremaximumretour: number;
+  critere: string
+  crtype: string
+  nombremaximumretour: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
