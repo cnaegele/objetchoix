@@ -8,13 +8,27 @@
         <v-radio label="bâtiments" :value="'bat'" class="me-4"></v-radio>
         <v-radio label="parcelles" :value="'par'"></v-radio>
     </v-radio-group>
-    <AdresseChoix></AdresseChoix>
+    <AdresseChoix :ssServer="ssServer"></AdresseChoix>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 import AdresseChoix from './AdresseChoix.vue'
 
+interface Props {
+  nombreMaximumRetour?: number
+  ssServer?: string
+  ssPageBatiment?: string
+  ssPageParcelle?: string
+}
+const props = withDefaults(defineProps<Props>(), {
+  nombreMaximumRetour: 100,
+  ssServer: '',
+  ssPageBatiment: '/goeland/batiment/axios/batiment_liste_paradresse.php',
+  ssPageParcelle: '/goeland/parcelle/axios/parcelle_liste_paradresse.php'
+})
+
+const ssServer = ref<string>(props.ssServer)
 const retourType = ref<string>('parbat')
 
 

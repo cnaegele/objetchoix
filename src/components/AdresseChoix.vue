@@ -17,11 +17,34 @@
         style="width: 400px; min-width: 400px;"
         @input="onInputCritere"
     ></v-text-field>
+        <v-list max-height="400">
+          <v-list-subheader>{{ libelleListe }}</v-list-subheader>
+          <v-list-item
+            v-for="adresse in adressesListeSelect"
+            :key="adresse.idadresse"
+            :value="adresse.idadresse"
+            :title="`${adresse.rue} ${adresse.numero}`"
+            @click="selectAdresse(adresse)"
+          >
+            <template v-slot:append>
+              <v-btn
+                color="grey-lighten-1"
+                icon="mdi-map-outline"
+                variant="text"
+                @mouseenter="infoMouseEnter()"
+                @mouseleave="infoMouseLeave()"
+                @click="openGC(adresse.coordeo, adresse.coordsn)"
+              ></v-btn>
+            </template>
+          </v-list-item>
+        </v-list>
       
 </template>
 
 <script setup lang="ts">
+import type { Adresse, ApiResponseAL } from '@/axioscalls.js'
 import { ref } from 'vue'
+import { getAdressesListe } from '@/axioscalls.js'
 
 interface Props {
   typeCritere?: string
@@ -46,12 +69,17 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const nombreMaximumRetour = ref<number>(props.nombreMaximumRetour)
+const ssServer = ref<string>(props.ssServer)
+const ssPage = ref<string>(props.ssPage)
 
 const typeCritere = ref<string>('nom')
 const txtCritere = ref<string>('')
 const inpTxtCritere = ref<any>(null)
 
-
+const messageErreur = ref<string>('')
+const libelleListe = ref<string>('selection adresses (0)')
+const adressesListeSelect = ref<Adresse[]>([])
+let demandeOpenGC: boolean = false
 
 
 //pour démarrer la recherche seulement si la frappe au clavier a cessé depuis 0.7 secondes
@@ -104,16 +132,35 @@ const recherche = async (crType: string, critereRue: string, critereNumero: stri
         crtype: crType,
         nombremaximumretour: nombreMaximumRetour
     }
-    console.log(oCritere)
-    //const response: ApiResponseOL = await getBatimentsListe(ssServer.value, ssPage.value, JSON.stringify(oCritere))
-    //const returnListe: Objet[] = response.success && response.data ? response.data : []
-    //if (returnListe.length < nombreMaximumRetour) {
-    //    libelleListe.value = `Choix bâtiments (${returnListe.length})`
-    //} else {
-    //    libelleListe.value = `Choix bâtiments (${returnListe.length}). Attention, plus de ${nombreMaximumRetour} bâtiments correspondent aux critères`
-    //}
-    //batimentsListeSelect.value = returnListe
+    const response: ApiResponseAL = await getAdressesListe(ssServer.value, ssPage.value, JSON.stringify(oCritere))
+    const returnListe: Adresse[] = response.success && response.data ? response.data : []
+    console.log(returnListe)
+    if (returnListe.length < nombreMaximumRetour) {
+        libelleListe.value = `Selection adresses (${returnListe.length})`
+    } else {
+        libelleListe.value = `Selection adresses (${returnListe.length}). Attention, plus de ${nombreMaximumRetour} adresses correspondent aux critères`
+    }
+    adressesListeSelect.value = returnListe
 }
+
+const infoMouseEnter = (): void => {
+  demandeOpenGC = true
+}
+
+const infoMouseLeave = (): void => {
+  demandeOpenGC = false
+}
+
+const selectAdresse = (adresse: Adresse): void => {
+  if (!demandeOpenGC) {
+      //emit('choixBatiment', batiment.id, JSON.stringify(batiment))
+  }
+}
+
+const openGC = (x: number, y: number) => {
+  window.open(`https://carto.lausanne.ch/?map_x=${x}&map_y=${y}y&map_zoom=7`, "gclausanne")
+}
+
 
 </script>
 

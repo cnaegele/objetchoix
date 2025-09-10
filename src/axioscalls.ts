@@ -10,6 +10,18 @@ export interface ApiResponseOL {
   message: string
   data?: Objet[]
 }
+export interface Adresse {
+    idadresse: number
+    rue: string
+    numero: string
+    coordeo: number
+    coordsn: number
+}
+export interface ApiResponseAL {
+  success: boolean
+  message: string
+  data?: Adresse[]
+}
 // Interface générique pour les réponses API
 interface ApiResponse<T> {
   success: boolean
@@ -92,6 +104,24 @@ export async function getCommunesRueListe(server: string = '', page: string): Pr
     try {
         const response: AxiosResponse<Objet[]> = await axios.get(urlol)
         const respData: ApiResponseOL= {
+            "success": true,
+            "message": `ok`,
+            "data": response.data
+        }
+        console.log(respData)
+        return respData
+    } catch (error) {
+        return traiteAxiosError(error as AxiosError)
+    }
+}
+
+export async function getAdressesListe(server: string = '', page: string, jsonCriteres: string = '{}'): Promise<ApiResponseAL> {
+    console.log(jsonCriteres)
+    const urlal: string = `${server}${page}`
+    const params = new URLSearchParams([['jsoncriteres', jsonCriteres]])
+    try {
+        const response: AxiosResponse<Adresse[]> = await axios.get(urlal, { params })
+        const respData: ApiResponseAL= {
             "success": true,
             "message": `ok`,
             "data": response.data
