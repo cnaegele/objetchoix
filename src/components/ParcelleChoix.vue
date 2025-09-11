@@ -1,59 +1,31 @@
 <template>
-    <div class="d-flex align-items-baseline">
-        <span class="me-2 mt-3">critère selon :</span>
-        <v-radio-group v-model="typeCritere" inline>
-          <v-radio label="numéro et commune" value="numero" class="me-4"></v-radio>
-          <v-radio label="n° ECA et commune" value="eca" class="me-4"></v-radio>
-          <v-radio label="egrid" value="egrid"></v-radio>
-        </v-radio-group>            
-    </div>
-    <div class="d-flex align-items-baseline">  
-        <v-text-field
-            dense
-            clearable
-            v-model="txtCritere"
-            ref="inpTxtCritere"
-            :label="libelleInpCritere"
-            class="flex-0-0"
-            style="width: 400px; min-width: 400px;"
-            @input="onInputCritere"
-        ></v-text-field>
-        &nbsp;&nbsp;
-        <v-autocomplete
-            v-if="typeCritere !== 'egrid'"
-            v-model="idOFSCommune"
-            label="Commune"
-            :items="communesListeSelect"
-            :custom-filter="communesCustomFilter"
-            item-title="nom"
-            item-value="id"
-            class="flex-0-0"
-            style="width: 400px; min-width: 400px;"
-            no-virtual
-        ></v-autocomplete>
-    </div>
+  <div class="d-flex align-items-baseline">
+    <span class="me-2 mt-3">critère selon :</span>
+    <v-radio-group v-model="typeCritere" inline>
+      <v-radio label="numéro et commune" value="numero" class="me-4"></v-radio>
+      <v-radio label="n° ECA et commune" value="eca" class="me-4"></v-radio>
+      <v-radio label="egrid" value="egrid"></v-radio>
+    </v-radio-group>
+  </div>
+  <div class="d-flex align-items-baseline">
+    <v-text-field dense clearable v-model="txtCritere" ref="inpTxtCritere" :label="libelleInpCritere" class="flex-0-0"
+      style="width: 400px; min-width: 400px;" @input="onInputCritere"></v-text-field>
+    &nbsp;&nbsp;
+    <v-autocomplete v-if="typeCritere !== 'egrid'" v-model="idOFSCommune" label="Commune" :items="communesListeSelect"
+      :custom-filter="communesCustomFilter" item-title="nom" item-value="id" class="flex-0-0"
+      style="width: 400px; min-width: 400px;" no-virtual></v-autocomplete>
+  </div>
 
-    <v-list max-height="400">
-        <v-list-subheader>{{ libelleListe }}</v-list-subheader>    
-          <v-list-item
-            v-for="parcelle in parcellesListeSelect"
-            :key="parcelle.id"
-            :value="parcelle.id"
-            :title="parcelle.nom"
-            @click="choixParcelle(parcelle)"
-          >
-            <template v-slot:append>
-              <v-btn
-                color="grey-lighten-1"
-                icon="mdi-information"
-                variant="text"
-                @mouseenter="infoMouseEnter()"
-                @mouseleave="infoMouseLeave()"
-                @click="openFicheObjet(parcelle.id)"
-              ></v-btn>
-            </template>
-        </v-list-item>    
-    </v-list>
+  <v-list max-height="400">
+    <v-list-subheader>{{ libelleListe }}</v-list-subheader>
+    <v-list-item v-for="parcelle in parcellesListeSelect" :key="parcelle.id" :value="parcelle.id" :title="parcelle.nom"
+      @click="choixParcelle(parcelle)">
+      <template v-slot:append>
+        <v-btn color="grey-lighten-1" icon="mdi-information" variant="text" @mouseenter="infoMouseEnter()"
+          @mouseleave="infoMouseLeave()" @click="openFicheObjet(parcelle.id)"></v-btn>
+      </template>
+    </v-list-item>
+  </v-list>
 
 </template>
 
@@ -61,7 +33,7 @@
 import type { Objet, ApiResponseOL } from '@/axioscalls.js'
 import type { FilterFunction } from 'vuetify'
 import { ref, watch, onMounted } from 'vue'
-import { getParcellesListe, getCommunesParcelleListe} from '@/axioscalls.js'
+import { getParcellesListe, getCommunesParcelleListe } from '@/axioscalls.js'
 
 interface Props {
   typeCritere?: string
@@ -99,19 +71,19 @@ const txtCritere = ref<string>('')
 const libelleInpCritere = ref<string>('')
 
 switch (typeCritereInitial) {
-    case 'numero':
-      libelleInpCritere.value = 'numéro parcelle'
-      break
-    case 'eca':
-      libelleInpCritere.value = 'n° ECA'
-      break
-    case 'egid':
-      libelleInpCritere.value = 'egrid'
-     break
-    default:
-      // Gestion du cas par défaut pour la sécurité
-      libelleInpCritere.value = '???'
-      break
+  case 'numero':
+    libelleInpCritere.value = 'numéro parcelle'
+    break
+  case 'eca':
+    libelleInpCritere.value = 'n° ECA'
+    break
+  case 'egid':
+    libelleInpCritere.value = 'egrid'
+    break
+  default:
+    // Gestion du cas par défaut pour la sécurité
+    libelleInpCritere.value = '???'
+    break
 }
 const ssServer = ref<string>(props.ssServer)
 const ssPage = ref<string>(props.ssPage)
@@ -139,7 +111,7 @@ const onInputCritere = (): void => {
   if (typingTimer) {
     clearTimeout(typingTimer)
   }
-  
+
   typingTimer = setTimeout(() => {
     prepareRecherche()
   }, typingInterval)
@@ -158,16 +130,16 @@ const listeCommune = async (): Promise<void> => {
 const prepareRecherche = (): void => {
   const critere: string = txtCritere.value.trim()
   const typeCr: string = typeCritere.value
-  if(critere !== '') {
+  if (critere !== '') {
     switch (typeCr) {
       case 'numero':
         if (critere.length !== 0) {
-          recherche('numero', critere, idOFSCommune.value, nombreMaximumRetour.value)  
+          recherche('numero', critere, idOFSCommune.value, nombreMaximumRetour.value)
         }
         break
       case 'eca':
-        recherche('eca', critere, idOFSCommune.value, nombreMaximumRetour.value)  
-      break
+        recherche('eca', critere, idOFSCommune.value, nombreMaximumRetour.value)
+        break
       case 'egrid':
         recherche('egrid', critere, 0, nombreMaximumRetour.value)
         break
@@ -176,12 +148,12 @@ const prepareRecherche = (): void => {
 }
 
 const recherche = async (crType: string, critere: string, idCommune: number, nombreMaximumRetour: number): Promise<void> => {
-    const oCritere: CritereRecherche = {
-        crtype: crType,
-        critere: critere,
-        idcommune: idCommune,
-        nombremaximumretour: nombreMaximumRetour
-    }
+  const oCritere: CritereRecherche = {
+    crtype: crType,
+    critere: critere,
+    idcommune: idCommune,
+    nombremaximumretour: nombreMaximumRetour
+  }
   const response: ApiResponseOL = await getParcellesListe(ssServer.value, ssPage.value, JSON.stringify(oCritere))
   const returnListe: Objet[] = response.success && response.data ? response.data : []
   if (returnListe.length < nombreMaximumRetour) {
@@ -198,21 +170,21 @@ const communesCustomFilter: FilterFunction = (
   item?: any
 ): boolean => {
   if (!queryText || !item) return true
-  
+
   const removeAccents = (str: string): string =>
     str.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-  
+
   const textLowerCase = itemTitle.toLowerCase()
   const searchTextLowerCase = queryText.toLowerCase()
   const textUnAccent = removeAccents(itemTitle)
   const searchTextUnAccent = removeAccents(queryText.toLowerCase())
-  
+
   return textLowerCase.includes(searchTextLowerCase) ||
-         textUnAccent.includes(searchTextUnAccent)
+    textUnAccent.includes(searchTextUnAccent)
 }
 
 watch(() => idOFSCommune.value, (newValue: number): void => {
-    prepareRecherche()
+  prepareRecherche()
 })
 
 watch(() => typeCritere.value, (newValue: string): void => {
@@ -234,13 +206,20 @@ watch(() => typeCritere.value, (newValue: string): void => {
   prepareRecherche()
 })
 
+watch(() => txtCritere.value, (newValue: string | null): void => {
+  if (newValue === null || newValue === '') {
+    libelleListe.value = `Selection adresses (0)`
+    parcellesListeSelect.value = []
+  }
+})
+
 const emit = defineEmits<{
   (e: 'choixParcelle', id: number, choix: string): void
 }>()
 
 const choixParcelle = (parcelle: Objet): void => {
   if (!demandeInformation) {
-      emit('choixParcelle', parcelle.id, JSON.stringify(parcelle))
+    emit('choixParcelle', parcelle.id, JSON.stringify(parcelle))
   }
 }
 
@@ -257,6 +236,4 @@ const openFicheObjet = (idobjet: number): void => {
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

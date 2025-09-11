@@ -1,44 +1,25 @@
 <template>
-    <div class="d-flex align-items-baseline">
-        <span class="me-2 mt-3">critère selon :</span>
-        <v-radio-group v-model="typeCritere" inline>
-          <v-radio label="nom" value="nom" class="me-4"></v-radio>
-          <v-radio label="n° ECA" value="eca" class="me-4"></v-radio>
-          <v-radio label="egid" value="egid"></v-radio>
-        </v-radio-group>            
-    </div>  
-    <v-text-field
-        dense
-        clearable
-        v-model="txtCritere"
-        ref="inpTxtCritere"
-        :label="libelleInpCritere"
-        style="width: 400px;"
-        :rules="critereRule"
-        @input="onInputCritere"
-    ></v-text-field>
-    
-    <v-list max-height="400">
-        <v-list-subheader>{{ libelleListe }}</v-list-subheader>    
-          <v-list-item
-            v-for="batiment in batimentsListeSelect"
-            :key="batiment.id"
-            :value="batiment.id"
-            :title="batiment.nom"
-            @click="choixBatiment(batiment)"
-          >
-            <template v-slot:append>
-              <v-btn
-                color="grey-lighten-1"
-                icon="mdi-information"
-                variant="text"
-                @mouseenter="infoMouseEnter()"
-                @mouseleave="infoMouseLeave()"
-                @click="openFicheObjet(batiment.id)"
-              ></v-btn>
-            </template>
-        </v-list-item>    
-    </v-list>
+  <div class="d-flex align-items-baseline">
+    <span class="me-2 mt-3">critère selon :</span>
+    <v-radio-group v-model="typeCritere" inline>
+      <v-radio label="nom" value="nom" class="me-4"></v-radio>
+      <v-radio label="n° ECA" value="eca" class="me-4"></v-radio>
+      <v-radio label="egid" value="egid"></v-radio>
+    </v-radio-group>
+  </div>
+  <v-text-field dense clearable v-model="txtCritere" ref="inpTxtCritere" :label="libelleInpCritere"
+    style="width: 400px;" :rules="critereRule" @input="onInputCritere"></v-text-field>
+
+  <v-list max-height="400">
+    <v-list-subheader>{{ libelleListe }}</v-list-subheader>
+    <v-list-item v-for="batiment in batimentsListeSelect" :key="batiment.id" :value="batiment.id" :title="batiment.nom"
+      @click="choixBatiment(batiment)">
+      <template v-slot:append>
+        <v-btn color="grey-lighten-1" icon="mdi-information" variant="text" @mouseenter="infoMouseEnter()"
+          @mouseleave="infoMouseLeave()" @click="openFicheObjet(batiment.id)"></v-btn>
+      </template>
+    </v-list-item>
+  </v-list>
 
 </template>
 
@@ -74,19 +55,19 @@ const nombreMaximumRetour = ref<number>(props.nombreMaximumRetour)
 const txtCritere = ref<string>('')
 const libelleInpCritere = ref<string>('')
 switch (typeCritereInitial) {
-    case 'nom':
-      libelleInpCritere.value = 'nom bâtiment'
-      break
-    case 'eca':
-      libelleInpCritere.value = 'n° ECA'
-      break
-    case 'egid':
-      libelleInpCritere.value = 'egid'
-     break
-    default:
-      // Gestion du cas par défaut pour la sécurité
-      libelleInpCritere.value = '???'
-      break
+  case 'nom':
+    libelleInpCritere.value = 'nom bâtiment'
+    break
+  case 'eca':
+    libelleInpCritere.value = 'n° ECA'
+    break
+  case 'egid':
+    libelleInpCritere.value = 'egid'
+    break
+  default:
+    // Gestion du cas par défaut pour la sécurité
+    libelleInpCritere.value = '???'
+    break
 }
 const ssServer = ref<string>(props.ssServer)
 const ssPage = ref<string>(props.ssPage)
@@ -107,7 +88,7 @@ const onInputCritere = (): void => {
   if (typingTimer) {
     clearTimeout(typingTimer)
   }
-  
+
   typingTimer = setTimeout(() => {
     prepareRecherche()
   }, typingInterval)
@@ -120,16 +101,16 @@ const onInputCritere = (): void => {
 const prepareRecherche = (): void => {
   const critere: string = txtCritere.value.trim()
   const typeCr: string = typeCritere.value
-  if(critere !== '') {
+  if (critere !== '') {
     switch (typeCr) {
       case 'nom':
         if (critere.length >= 3) {
-          recherche('nom', critere, nombreMaximumRetour.value)  
+          recherche('nom', critere, nombreMaximumRetour.value)
         }
         break
       case 'eca':
-        recherche('eca', critere, nombreMaximumRetour.value)  
-      break
+        recherche('eca', critere, nombreMaximumRetour.value)
+        break
       case 'egid':
         if (bCritereEgidOK) {
           recherche('egid', critere, nombreMaximumRetour.value)
@@ -140,11 +121,11 @@ const prepareRecherche = (): void => {
 }
 
 const recherche = async (crType: string, critere: string, nombreMaximumRetour: number): Promise<void> => {
-    const oCritere: CritereRecherche = {
-        crtype: crType,
-        critere: critere,
-        nombremaximumretour: nombreMaximumRetour
-    }
+  const oCritere: CritereRecherche = {
+    crtype: crType,
+    critere: critere,
+    nombremaximumretour: nombreMaximumRetour
+  }
   const response: ApiResponseOL = await getBatimentsListe(ssServer.value, ssPage.value, JSON.stringify(oCritere))
   const returnListe: Objet[] = response.success && response.data ? response.data : []
   if (returnListe.length < nombreMaximumRetour) {
@@ -163,7 +144,7 @@ const critereRule: ValidationRule[] = [
           bCritereEgidOK = false
           return `l'egid doit être numérique`
         }
-        
+
         const numericValue = parseInt(value, 10)
         if (numericValue <= 0 || numericValue > 9999999999) {
           bCritereEgidOK = false
@@ -196,13 +177,20 @@ watch(() => typeCritere.value, (newValue: string): void => {
   prepareRecherche()
 })
 
+watch(() => txtCritere.value, (newValue: string | null): void => {
+  if (newValue === null || newValue === '') {
+    libelleListe.value = `Selection adresses (0)`
+    batimentsListeSelect.value = []
+  }
+})
+
 const emit = defineEmits<{
   (e: 'choixBatiment', id: number, choix: string): void
 }>()
 
 const choixBatiment = (batiment: Objet): void => {
   if (!demandeInformation) {
-      emit('choixBatiment', batiment.id, JSON.stringify(batiment))
+    emit('choixBatiment', batiment.id, JSON.stringify(batiment))
   }
 }
 
@@ -219,6 +207,4 @@ const openFicheObjet = (idobjet: number): void => {
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
