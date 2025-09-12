@@ -9,9 +9,9 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AdresseChoix: typeof import('./src/components/AdresseChoix.vue')['default']
+    AutreObjetChoix: typeof import('./src/components/AutreObjetChoix.vue')['default']
     BatimentChoix: typeof import('./src/components/BatimentChoix.vue')['default']
     BatimentParcelleChoix: typeof import('./src/components/BatimentParcelleChoix.vue')['default']
-    copy: typeof import('./src/components/ParcelleChoix copy.vue')['default']
     ObjetChoix: typeof import('./src/components/ObjetChoix.vue')['default']
     ParcelleChoix: typeof import('./src/components/ParcelleChoix.vue')['default']
     RueChoix: typeof import('./src/components/RueChoix.vue')['default']

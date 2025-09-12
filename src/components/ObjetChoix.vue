@@ -5,6 +5,7 @@
       <v-tab value="parcelle" v-if="props.parcelle === 'oui'">Parcelles</v-tab>
       <v-tab value="batpar" v-if="props.batpar === 'oui'">Bâtiments et Parcelles par adresse</v-tab>
       <v-tab value="rue" v-if="props.rue === 'oui'">Rues</v-tab>
+      <v-tab value="autre" v-if="props.autre === 'oui'">Autres objets</v-tab>
     </v-tabs>
 
     <v-card-text>
@@ -24,6 +25,10 @@
 
         <v-tabs-window-item value="rue" v-if="props.rue === 'oui'">
           <RueChoix :ssServer="ssServer" @choixRue="receptionObjet"></RueChoix>
+        </v-tabs-window-item>
+
+        <v-tabs-window-item value="autre" v-if="props.autre === 'oui'">
+          <AutreObjetChoix></AutreObjetChoix>
         </v-tabs-window-item>
       </v-tabs-window>
     </v-card-text>

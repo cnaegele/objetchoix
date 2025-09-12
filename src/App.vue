@@ -36,6 +36,14 @@
             ></v-switch>
           </v-col>
           <v-col>
+            <v-switch 
+              :label="`choix autre objet ${choixAutreObjet}`" 
+              v-model="choixAutreObjet"
+              false-value="oui"
+              true-value="non"
+            ></v-switch>
+          </v-col>
+          <v-col>
             <div class="d-flex">
               <v-select
                 class="ml-4 mr-2"
@@ -61,6 +69,7 @@
         :parcelle="choixParcelle"
         :batpar="choixBatPar"
         :rue="choixRue"
+        :autre="choixAutreObjet"
         :ssServer="ssServer"
         @choixObjet="receptionObjet"
       ></ObjetChoix> 
@@ -77,6 +86,7 @@ const choixBatiment = ref<string>('oui')
 const choixParcelle = ref<string>('oui')
 const choixBatPar = ref<string>('oui')
 const choixRue = ref<string>('oui')
+const choixAutreObjet = ref<string>('oui')
 const choixObjet = ref<boolean>(false)
 
 const ssServer = ref<string>('')
