@@ -22,6 +22,17 @@ export interface ApiResponseAL {
     message: string
     data?: Adresse[]
 }
+export interface TypeObjet {
+    id: number
+    nom: string
+    bfavori: number
+    bdefaut: number
+}
+export interface ApiResponseTOL {
+    success: boolean
+    message: string
+    data?: TypeObjet[]
+}
 // Interface générique pour les réponses API
 interface ApiResponse<T> {
     success: boolean
@@ -71,17 +82,7 @@ export async function getBatimentsListeParAdresse(server: string = '', page: str
     }
 }
 
-export async function getParcellesListeParAdresse(server: string = '', page: string, jsonCriteres: string = '{}'): Promise<ApiResponseOL> {
-    /**
-     * jsonCritere :
-     * idadresse : identifian de l'adresse
-     * bactif (optionnel def 1) : 1 uniquement parcelles "active" / 0 avec parcelle inactive (radiée)
-     * bstandard (optionnel def 1) : 1 retour parcelles standard / 0 pas de parcelle standard
-     * bddp (optionnel def 1) : 1 retour parcelles DDP / 0 pas de DDP
-     * bppe (optionnel def 1) : 1 retour des parcelles PPE / 0 pas de PPE
-     * bcopr (optionnel def 1) : 1 retour des parcelles Copropriété / 0 pas de Copropriété
-     * typeretoursp (optionnel def '') : 'objet' la sp retourne les data selon l'interface Objet    
-     */
+export async function getParcellesListe(server: string = '', page: string, jsonCriteres: string = '{}'): Promise<ApiResponseOL> {
     console.log(jsonCriteres)
     const urlol: string = `${server}${page}`
     const params = new URLSearchParams([['jsoncriteres', jsonCriteres]])
@@ -99,7 +100,17 @@ export async function getParcellesListeParAdresse(server: string = '', page: str
     }
 }
 
-export async function getParcellesListe(server: string = '', page: string, jsonCriteres: string = '{}'): Promise<ApiResponseOL> {
+export async function getParcellesListeParAdresse(server: string = '', page: string, jsonCriteres: string = '{}'): Promise<ApiResponseOL> {
+    /**
+     * jsonCritere :
+     * idadresse : identifian de l'adresse
+     * bactif (optionnel def 1) : 1 uniquement parcelles "active" / 0 avec parcelle inactive (radiée)
+     * bstandard (optionnel def 1) : 1 retour parcelles standard / 0 pas de parcelle standard
+     * bddp (optionnel def 1) : 1 retour parcelles DDP / 0 pas de DDP
+     * bppe (optionnel def 1) : 1 retour des parcelles PPE / 0 pas de PPE
+     * bcopr (optionnel def 1) : 1 retour des parcelles Copropriété / 0 pas de Copropriété
+     * typeretoursp (optionnel def '') : 'objet' la sp retourne les data selon l'interface Objet    
+     */
     console.log(jsonCriteres)
     const urlol: string = `${server}${page}`
     const params = new URLSearchParams([['jsoncriteres', jsonCriteres]])
@@ -174,6 +185,40 @@ export async function getAdressesListe(server: string = '', page: string, jsonCr
     try {
         const response: AxiosResponse<Adresse[]> = await axios.get(urlal, { params })
         const respData: ApiResponseAL = {
+            "success": true,
+            "message": `ok`,
+            "data": response.data
+        }
+        console.log(respData)
+        return respData
+    } catch (error) {
+        return traiteAxiosError(error as AxiosError)
+    }
+}
+
+export async function getTypeObjetListe(server: string = '', page: string): Promise<ApiResponseTOL> {
+    const urltol: string = `${server}${page}`
+    try {
+        const response: AxiosResponse<TypeObjet[]> = await axios.get(urltol)
+        const respData: ApiResponseTOL = {
+            "success": true,
+            "message": `ok`,
+            "data": response.data
+        }
+        //console.log(respData)
+        return respData
+    } catch (error) {
+        return traiteAxiosError(error as AxiosError)
+    }
+}
+
+export async function getObjetsListe(server: string = '', page: string, jsonCriteres: string = '{}'): Promise<ApiResponseOL> {
+    console.log(jsonCriteres)
+    const urlol: string = `${server}${page}`
+    const params = new URLSearchParams([['jsoncriteres', jsonCriteres]])
+    try {
+        const response: AxiosResponse<Objet[]> = await axios.get(urlol, { params })
+        const respData: ApiResponseOL = {
             "success": true,
             "message": `ok`,
             "data": response.data

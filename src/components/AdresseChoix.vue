@@ -203,7 +203,6 @@ const choixTermine = () => {
   libelleListeChoisi.value = `adresses choisies (${adressesChoisi.value.length})`
 }
 
-
 </script>
 
 <style scoped></style>

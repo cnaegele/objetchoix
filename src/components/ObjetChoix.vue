@@ -28,7 +28,7 @@
         </v-tabs-window-item>
 
         <v-tabs-window-item value="autre" v-if="props.autre === 'oui'">
-          <AutreObjetChoix></AutreObjetChoix>
+          <AutreObjetChoix :ssServer="ssServer" @choixAutreObjet="receptionObjet"></AutreObjetChoix>
         </v-tabs-window-item>
       </v-tabs-window>
     </v-card-text>
