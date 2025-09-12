@@ -58,7 +58,6 @@ interface Props {
   autre?: string
   nombreMaximumRetour?: number
   ssServer?: string
-  ssPage?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -71,7 +70,6 @@ const props = withDefaults(defineProps<Props>(), {
   autre: "oui",
   nombreMaximumRetour: 100,
   ssServer: '',
-  ssPage: '/goeland/acteur/ajax/acteur_liste.php'
 })
 
 const tabchoisi = ref<string | null>(null)
@@ -116,6 +114,7 @@ const supprimeChoix = (id: number) => {
 const choixTermine = () => {
   emit('choixObjet', 0, JSON.stringify(objetsChoisi.value))
   objetsChoisi.value = []
+  libelleListe.value = `objets choisis (${objetsChoisi.value.length})`
 }
 
 const openFicheObjet = (idobjet: number): void => {

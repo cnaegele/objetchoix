@@ -1,11 +1,12 @@
 <template>
   <div class="d-flex align-center">
     <span class="me-4">retour de</span>
-    <v-radio-group v-model="retourType" inline density="compact" hide-details>
+    <v-radio-group v-model="retourType" inline density="compact" hide-details class="flex-grow-0 me-4">
       <v-radio label="parcelles et bâtiments" :value="'parbat'" class="me-4"></v-radio>
       <v-radio label="bâtiments" :value="'bat'" class="me-4"></v-radio>
       <v-radio label="parcelles" :value="'par'"></v-radio>
     </v-radio-group>
+    <v-checkbox v-if="retourType === 'parbat' || retourType === 'par'" label="avec parcelles PPE" v-model="bPPE" density="compact" hide-details></v-checkbox>
   </div>
   <AdresseChoix :modeChoix="modeChoixAdresse" :ssServer="ssServer" @choixAdresse="receptionAdresse"></AdresseChoix>
 </template>
@@ -24,6 +25,7 @@ interface Props {
 }
 interface CritereRecherche {
   idadresse: number
+  bppe: string
   typeretoursp: string
 }
 const props = withDefaults(defineProps<Props>(), {
@@ -38,11 +40,16 @@ const ssServer = ref<string>(props.ssServer)
 const ssPageBatiment = ref<string>(props.ssPageBatiment)
 const ssPageParcelle = ref<string>(props.ssPageParcelle)
 const retourType = ref<string>('parbat')
+const bPPE = ref<boolean>(false)
 let batparListe: Objet[] = []
 
 const receptionAdresse = async (id: number, jsonData: string) => {
   let adresses: Adresse[] = []
   const retAdresse: Adresse | Adresse[] = JSON.parse(jsonData)
+  let nbPPE: string = '0'
+  if (bPPE.value) {
+    nbPPE = '1'  
+  }
   if (!Array.isArray(retAdresse)) {
     adresses.push(retAdresse)
   } else {
@@ -51,6 +58,7 @@ const receptionAdresse = async (id: number, jsonData: string) => {
   for (const adresse of adresses) {
     const oCritere: CritereRecherche = {
       "idadresse": adresse.idadresse,
+      "bppe": nbPPE,
       "typeretoursp": 'objet'
     }
 
