@@ -1,8 +1,9 @@
 <?php
 require_once 'gdt/cldbgoeland.php';
 header("Access-Control-Allow-Origin: *");
+header("Content-Type: application/json; charset=UTF-8");
 $bParamsOk = true;
-$msgParamsKO = '';
+$msgErreur = '';
 if (isset($_GET['jsoncriteres'])) {
     $jsonCriteres = $_GET['jsoncriteres'];
     $oCriteres = json_decode($jsonCriteres, false);
@@ -10,11 +11,11 @@ if (isset($_GET['jsoncriteres'])) {
         $crtype = $oCriteres->crtype;
         if ($crtype != 'nom' && $crtype != 'nomcomplet') {
             $bParamsOk = false;
-            $msgParamsKO .= ' crtype invalide';
+            $msgErreur = 'paramètre crtype invalide';
         }
     } else {
         $bParamsOk = false;
-        $msgParamsKO .= ' crtype manquant';
+        $msgErreur = 'paramètre crtype manquant';
     }
     $critereRue = '';
     if (isset($oCriteres->critererue)) {
@@ -28,11 +29,11 @@ if (isset($_GET['jsoncriteres'])) {
             if (ctype_digit($critereNumero) || is_int($critereNumero)) {
                 if ($critereNumero < 0 || $critereNumero > 9999) {
                     $bParamsOk = false;
-                    $msgParamsKO .= ' criterenumero hors limite';
+                    $msgErreur = 'paramètre criterenumero hors limite';
                 }
             } else {
                 $bParamsOk = false;
-                $msgParamsKO .= ' criterenumero non num&eacute;rique';
+                $msgErreur = 'paramètre criterenumero non num&eacute;rique';
             }
         }
     }
@@ -47,7 +48,7 @@ if (isset($_GET['jsoncriteres'])) {
     }
 } else {
     $bParamsOk = false;
-    $msgParamsKO .= ' param&egrave;tres json manquant';
+    $msgErreur = 'GET jsoncriteres manquant';;
 }
 if ($bParamsOk) {
     $bnomcomplet = '0';
@@ -89,11 +90,11 @@ if ($bParamsOk) {
     $bret = $dbgo->queryRetJson2($sSql);
     if ($bret === true) {
         echo $dbgo->resString;
-        unset($dbgo);
     } else {
-        echo '{"message" : "adresse_liste:' . $dbgo->resErreur . '"}';
-        unset($dbgo);
+        $msgErreur =  'cn_adresse_liste: ' . $dbgo->resErreur;
     }
-} else {
-    echo '{"message" : "adresse_liste:param&egrave;tres invalides' . $msgParamsKO . '"}';;
+}
+if ($msgErreur != '') {
+    http_response_code(400);
+    echo $msgErreur;
 }

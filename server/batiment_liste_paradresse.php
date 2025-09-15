@@ -1,6 +1,7 @@
 <?php
 require_once 'gdt/cldbgoeland.php';
 header("Access-Control-Allow-Origin: *");
+header("Content-Type: application/json; charset=UTF-8");
 $bParamsOk = true;
 $msgErreur = '';
 if (isset($_GET['jsoncriteres'])) {

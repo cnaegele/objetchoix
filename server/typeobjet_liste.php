@@ -2,12 +2,11 @@
 require_once 'gdt/cldbgoeland.php';
 require 'gdt/gautentificationf5.php';
 header("Access-Control-Allow-Origin: *");
-
-$idCaller = 6;
-//if (array_key_exists('empid', $_SESSION)) {
-//    $idCaller = $_SESSION['empid'];
-//}
-
+header("Content-Type: application/json; charset=UTF-8");
+$idCaller = 0;
+if (array_key_exists('empid', $_SESSION)) {
+    $idCaller = $_SESSION['empid'];
+}
 $sSql = "cn_typething_listechoix $idCaller";
 $dbgo = new DBGoeland();
 $dbgo->queryRetJson2($sSql);

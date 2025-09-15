@@ -1,6 +1,7 @@
 <?php
 require_once 'gdt/cldbgoeland.php';
 header("Access-Control-Allow-Origin: *");
+header("Content-Type: application/json; charset=UTF-8");
 $idCommune = '632';
 if (isset($_GET['jsoncriteres'])) {
     $jsonCriteres = $_GET['jsoncriteres'];

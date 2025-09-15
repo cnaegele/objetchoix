@@ -1,6 +1,7 @@
 <?php
 require_once 'gdt/cldbgoeland.php';
 header("Access-Control-Allow-Origin: *");
+header("Content-Type: application/json; charset=UTF-8");
 $dbgo = new DBGoeland();
 $sSql = 'cn_thistreet_commune_liste';
 //echo '{"message": "' . str_replace('"', '\"', $sSql) . '"}';
