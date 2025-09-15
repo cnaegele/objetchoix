@@ -1,4 +1,5 @@
 <template>
+  <div v-if="messageErreur != ''" id="divErreur">{{ messageErreur }}</div>
   <div class="d-flex align-items-baseline">
     <span class="me-2 mt-3">critère selon :</span>
     <v-radio-group v-model="typeCritere" inline>
@@ -123,6 +124,9 @@ const onInputCritere = (): void => {
 
 const listeCommune = async (): Promise<void> => {
   const response: ApiResponseOL = await getCommunesParcelleListe(ssServer.value, ssPageCommune.value,)
+  if (response.success === false) {
+    messageErreur.value = response.message
+  }
   const returnListe: Objet[] = response.success && response.data ? response.data : []
   communesListeSelect.value = returnListe
 }
@@ -155,6 +159,11 @@ const recherche = async (crType: string, critere: string, idCommune: number, nom
     nombremaximumretour: nombreMaximumRetour
   }
   const response: ApiResponseOL = await getParcellesListe(ssServer.value, ssPage.value, JSON.stringify(oCritere))
+  if (response.success === false) {
+    messageErreur.value = response.message
+  } else {
+    messageErreur.value = ''    
+  }
   const returnListe: Objet[] = response.success && response.data ? response.data : []
   if (returnListe.length < nombreMaximumRetour) {
     libelleListe.value = `Choix parcelles (${returnListe.length})`

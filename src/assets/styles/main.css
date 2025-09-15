@@ -1,0 +1,12 @@
+#divErreur{
+  background-color:lightsalmon;
+  margin-left: 5px;
+  margin-right: 5px;
+  margin-top: 0px;
+  padding: 5px;
+  border-style: solid;
+  border-width: thin;
+  border-color: black;
+  border-radius: 20px;
+  white-space: pre-line; /* Convertit les \n en sauts de ligne */
+}

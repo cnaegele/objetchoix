@@ -2,7 +2,7 @@
 require_once 'gdt/cldbgoeland.php';
 header("Access-Control-Allow-Origin: *");
 $bParamsOk = true;
-$msgParamsKO = '';
+$msgErreur = '';
 if (isset($_GET['jsoncriteres'])) {
     $jsonCriteres = $_GET['jsoncriteres'];
     $oCriteres = json_decode($jsonCriteres, false);
@@ -17,7 +17,7 @@ if (isset($_GET['jsoncriteres'])) {
         $critere = $oCriteres->critere;
     } else {
         $bParamsOk = false;
-        $msgParamsKO .= ' critere manquant';
+        $msgErreur = 'paramètre critere manquant';
     }
     if ($bParamsOk) {
         $nombreMaximumRetour = '100';
@@ -46,16 +46,16 @@ if (isset($_GET['jsoncriteres'])) {
                     break;
                 default:
                     $bParamsOk = false;
-                    $msgParamsKO .= ' crtype inconnu';
+                    $msgErreur = 'paramètre crtype inconnu';
             }
         } else {
             $bParamsOk = false;
-            $msgParamsKO .= ' crtype manquant';
+            $msgErreur = 'paramètre crtype manquant';
         }
     }
 } else {
     $bParamsOk = false;
-    $msgParamsKO .= ' paramètres json manquant';
+    $msgErreur = 'GET jsoncriteres manquant';
 }
 if ($bParamsOk) {
     $critere = str_replace("'", "''", $critere);
@@ -69,11 +69,12 @@ if ($bParamsOk) {
     $bret = $dbgo->queryRetJson2($sSql);
     if ($bret === true) {
         echo $dbgo->resString;
-        unset($dbgo);
     } else {
-        echo '{"message" : "cn_parcelle_liste:' . $dbgo->resErreur . '"}';
-        unset($dbgo);
+        $msgErreur = 'cn_parcelle_liste: ' . $dbgo->resErreur;
     }
-} else {
-    echo '{"message" : "cn_parcelle_liste:paramètres invalides' . $msgParamsKO . '"}';;
+    unset($dbgo);
+}
+if ($msgErreur != '') {
+    http_response_code(400);
+    echo $msgErreur;
 }

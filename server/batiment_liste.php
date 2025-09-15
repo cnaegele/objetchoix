@@ -2,7 +2,7 @@
 require_once 'gdt/cldbgoeland.php';
 header("Access-Control-Allow-Origin: *");
 $bParamsOk = true;
-$msgParamsKO = '';
+$msgErreur = '';
 if (isset($_GET['jsoncriteres'])) {
     $jsonCriteres = $_GET['jsoncriteres'];
     $oCriteres = json_decode($jsonCriteres, false);
@@ -10,7 +10,7 @@ if (isset($_GET['jsoncriteres'])) {
         $critere = $oCriteres->critere;
     } else {
         $bParamsOk = false;
-        $msgParamsKO .= ' critere manquant';
+        $msgErreur = 'paramètre critere manquant';
     }
     if ($bParamsOk) {
         $nombreMaximumRetour = '100';
@@ -38,26 +38,25 @@ if (isset($_GET['jsoncriteres'])) {
                     if (ctype_digit((string)$critere) || is_int($critere)) {
                         if ($critere < 0 || $critere > 999999999) {
                             $bParamsOk = false;
-                            $msgParamsKO .= ' egid hors limite';
+                            $msgErreur = 'parametre egid hors limite';
                         }
                     } else {
                         $bParamsOk = false;
-                        $msgParamsKO .= ' egid non numérique';
+                        $msgErreur = 'paramètre egid non numérique';
                     }
                     break;
                 default:
                     $bParamsOk = false;
-                    $msgParamsKO .= ' crtype inconnu';
+                    $msgErreur = 'paramètre crtype inconnu';
             }
         } else {
             $bParamsOk = false;
-            $msgParamsKO .= ' crtype manquant';
+            $msgErreur = 'paramètre crtype manquant';
         }
-
     }
 } else {
     $bParamsOk = false;
-    $msgParamsKO .= ' paramètres json manquant';
+    $msgErreur = 'GET jsoncriteres manquant';
 }
 if ($bParamsOk) {
     $critere = str_replace("'", "''", $critere);
@@ -80,11 +79,12 @@ if ($bParamsOk) {
     $bret = $dbgo->queryRetJson2($sSql);
     if ($bret === true) {
         echo $dbgo->resString;
-        unset($dbgo);
     } else {
-        echo '{"message" : "cn_batiment_liste:' . $dbgo->resErreur . '"}';
-        unset($dbgo);
+        $msgErreur = 'cn_batiment_liste: ' . $dbgo->resErreur;
     }
-} else {
-    echo '{"message" : "cn_batiment_liste:paramètres invalides' . $msgParamsKO . '"}';;
+    unset($dbgo);
+}
+if ($msgErreur != '') {
+    http_response_code(400);
+    echo $msgErreur;
 }

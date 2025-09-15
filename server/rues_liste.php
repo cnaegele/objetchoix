@@ -10,6 +10,11 @@ if (isset($_GET['jsoncriteres'])) {
     }
 }
 $dbgo = new DBGoeland();
-$dbgo->queryRetJson2("cn_thistreet_liste $idCommune");
-echo $dbgo->resString;
+$bret = $dbgo->queryRetJson2("cn_thistreet_liste $idCommune");
+if ($bret === true) {
+    echo $dbgo->resString;
+} else {
+    http_response_code(400);
+    echo 'cn_thistreet_liste:' . $dbgo->resErreur;
+}
 unset($dbgo);

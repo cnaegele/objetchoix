@@ -1,4 +1,5 @@
 <template>
+  <div v-if="messageErreur != ''" id="divErreur">{{ messageErreur }}</div>
   <div class="d-flex align-center">
     <span class="me-4">retour de</span>
     <v-radio-group v-model="retourType" inline density="compact" hide-details class="flex-grow-0 me-4">
@@ -35,6 +36,7 @@ const props = withDefaults(defineProps<Props>(), {
   ssPageParcelle: '/goeland/parcelle/axios/parcelle_liste_paradresse.php'
 })
 
+const messageErreur = ref<string>('')
 const modeChoixAdresse = ref<string>('unique')
 const ssServer = ref<string>(props.ssServer)
 const ssPageBatiment = ref<string>(props.ssPageBatiment)
@@ -86,8 +88,13 @@ const emit = defineEmits<{
 
 const rechercheBatiment = async (jsoncritere: string): Promise<void> => {
   const response: ApiResponseOL = await getBatimentsListeParAdresse(ssServer.value, ssPageBatiment.value, jsoncritere)
+  if (response.success === false) {
+    messageErreur.value = response.message
+  } else {
+    messageErreur.value = ''    
+  }
   const returnListe: Objet[] = response.success && response.data ? response.data : []
-  console.log(returnListe)
+  //console.log(returnListe)
   for (const objet of returnListe) {
     batparListe.push(objet)
   }
@@ -95,17 +102,17 @@ const rechercheBatiment = async (jsoncritere: string): Promise<void> => {
 
 const rechercheParcelle = async (jsoncritere: string): Promise<void> => {
   const response: ApiResponseOL = await getParcellesListeParAdresse(ssServer.value, ssPageParcelle.value, jsoncritere)
+  if (response.success === false) {
+    messageErreur.value = response.message
+  } else {
+    messageErreur.value = ''    
+  }
   const returnListe: Objet[] = response.success && response.data ? response.data : []
-  console.log(returnListe)
+  //console.log(returnListe)
   for (const objet of returnListe) {
     batparListe.push(objet)
   }
 }
-
-
-
-
-
 </script>
 
 <style scoped></style>

@@ -8,7 +8,8 @@ $bret = $dbgo->queryRetJson2($sSql);
 if ($bret === true) {
     echo $dbgo->resString;
 } else {
-    echo '{"message" : "cn_thistreet_commune_liste:' . $dbgo->resErreur . '"}';
+    http_response_code(400);
+    echo 'cn_thistreet_commune_liste:' . $dbgo->resErreur;
 }
 unset($dbgo);
 

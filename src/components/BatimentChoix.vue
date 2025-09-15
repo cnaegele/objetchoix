@@ -1,4 +1,5 @@
 <template>
+  <div v-if="messageErreur != ''" id="divErreur">{{ messageErreur }}</div>
   <div class="d-flex align-items-baseline">
     <span class="me-2 mt-3">critère selon :</span>
     <v-radio-group v-model="typeCritere" inline>
@@ -20,7 +21,6 @@
       </template>
     </v-list-item>
   </v-list>
-
 </template>
 
 <script setup lang="ts">
@@ -127,6 +127,11 @@ const recherche = async (crType: string, critere: string, nombreMaximumRetour: n
     nombremaximumretour: nombreMaximumRetour
   }
   const response: ApiResponseOL = await getBatimentsListe(ssServer.value, ssPage.value, JSON.stringify(oCritere))
+  if (response.success === false) {
+    messageErreur.value = response.message
+  } else {
+    messageErreur.value = ''    
+  }
   const returnListe: Objet[] = response.success && response.data ? response.data : []
   if (returnListe.length < nombreMaximumRetour) {
     libelleListe.value = `Choix bâtiments (${returnListe.length})`

@@ -1,40 +1,21 @@
 <template>
-    <div class="d-flex align-items-baseline">  
-        <v-autocomplete
-            v-model="rueChoisie"
-            :label="labelChoixRue"
-            :items="ruesListeSelect"
-            :custom-filter="ruescommunesCustomFilter"
-            item-title="nom"
-            item-value="id"
-            return-object
-            class="flex-0-0"
-            style="width: 400px; min-width: 400px;"
-            no-virtual
-            clearable
-        ></v-autocomplete>        
-        &nbsp;&nbsp;
-        <v-autocomplete
-            v-model="communeChoisie"
-            label="Commune"
-            :items="communesListeSelect"
-            :custom-filter="ruescommunesCustomFilter"
-            item-title="nom"
-            item-value="id"
-            return-object
-            class="flex-0-0"
-            style="width: 400px; min-width: 400px;"
-            no-virtual
-            clearable
-        ></v-autocomplete>
-    </div>
+  <div v-if="messageErreur != ''" id="divErreur">{{ messageErreur }}</div>
+  <div class="d-flex align-items-baseline">
+    <v-autocomplete v-model="rueChoisie" :label="labelChoixRue" :items="ruesListeSelect"
+      :custom-filter="ruescommunesCustomFilter" item-title="nom" item-value="id" return-object class="flex-0-0"
+      style="width: 600px; min-width: 400px;" no-virtual clearable></v-autocomplete>
+    &nbsp;&nbsp;
+    <v-autocomplete v-model="communeChoisie" label="Commune" :items="communesListeSelect"
+      :custom-filter="ruescommunesCustomFilter" item-title="nom" item-value="id" return-object class="flex-0-0"
+      style="width: 400px; min-width: 400px;" no-virtual clearable></v-autocomplete>
+  </div>
 </template>
 
 <script setup lang="ts">
 import type { Objet, ApiResponseOL } from '@/axioscalls.js'
 import type { FilterFunction } from 'vuetify'
 import { ref, watch, onMounted } from 'vue'
-import { getRuesListe, getCommunesRueListe} from '@/axioscalls.js'
+import { getRuesListe, getCommunesRueListe } from '@/axioscalls.js'
 
 interface Props {
   nombreMaximumRetour?: number
@@ -85,32 +66,43 @@ onMounted(() => {
 })
 
 const listeCommunes = async (): Promise<void> => {
-  console.log(idGoCommune.value)
+  //console.log(idGoCommune.value)
   const response: ApiResponseOL = await getCommunesRueListe(ssServer.value, ssPageCommune.value,)
+  if (response.success === false) {
+    messageErreur.value = response.message
+  } else {
+    messageErreur.value = ''
+  }
   const returnListe: Objet[] = response.success && response.data ? response.data : []
   communesListeSelect.value = returnListe
 }
 
 const listeRues = async (idCommune: number): Promise<void> => {
-    const oCritere: CritereRecherche = {
-        idcommune: idCommune
-    }
+  const oCritere: CritereRecherche = {
+    idcommune: idCommune
+  }
   const response: ApiResponseOL = await getRuesListe(ssServer.value, ssPage.value, JSON.stringify(oCritere))
+  if (response.success === false) {
+    messageErreur.value = response.message
+  } else {
+    messageErreur.value = ''
+  }
   const returnListe: Objet[] = response.success && response.data ? response.data : []
   ruesListeSelect.value = returnListe
 }
 
 watch(() => communeChoisie.value, (): void => {
-    if (communeChoisie.value !== null) {
-        labelChoixRue.value = `choix rue ${communeChoisie.value.nom}`
-        listeRues(communeChoisie.value.id)
-    }
+  if (communeChoisie.value !== null) {
+    rueChoisie.value = null
+    labelChoixRue.value = `choix rue ${communeChoisie.value.nom}`
+    listeRues(communeChoisie.value.id)
+  }
 })
 
 watch(() => rueChoisie.value, (): void => {
-    if (rueChoisie.value !== null) {
-        choixRue(rueChoisie.value)
-    }
+  if (rueChoisie.value !== null) {
+    choixRue(rueChoisie.value)
+  }
 })
 
 const emit = defineEmits<{
@@ -118,7 +110,7 @@ const emit = defineEmits<{
 }>()
 
 const choixRue = (rue: Objet): void => {
-    emit('choixRue', rue.id, JSON.stringify(rue))
+  emit('choixRue', rue.id, JSON.stringify(rue))
 }
 
 const ruescommunesCustomFilter: FilterFunction = (
@@ -127,17 +119,17 @@ const ruescommunesCustomFilter: FilterFunction = (
   item?: any
 ): boolean => {
   if (!queryText || !item) return true
-  
+
   const removeAccents = (str: string): string =>
     str.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-  
+
   const textLowerCase = itemTitle.toLowerCase()
   const searchTextLowerCase = queryText.toLowerCase()
   const textUnAccent = removeAccents(itemTitle)
   const searchTextUnAccent = removeAccents(queryText.toLowerCase())
-  
+
   return textLowerCase.includes(searchTextLowerCase) ||
-         textUnAccent.includes(searchTextUnAccent)
+    textUnAccent.includes(searchTextUnAccent)
 }
 
 
@@ -145,6 +137,4 @@ const ruescommunesCustomFilter: FilterFunction = (
 
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

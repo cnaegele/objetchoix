@@ -1,4 +1,5 @@
 <template>
+    <div v-if="messageErreur != ''" id="divErreur">{{ messageErreur }}</div>
     <div class="d-flex align-items-baseline">
         <div style="width: 400px; flex-shrink: 0;" class="me-4">
             <v-text-field dense clearable v-model="txtCritere" ref="inpTxtCritere" label="nom ou id goéland"
@@ -78,6 +79,11 @@ const typesObjetListe = ref<TypeObjet[]>([])
 
 const listeTypeObjet = async (): Promise<void> => {
     const response: ApiResponseTOL = await getTypeObjetListe(ssServer.value, ssPageType.value,)
+    if (response.success === false) {
+        messageErreur.value = response.message
+    } else {
+        messageErreur.value = ''    
+    }
     typesObjetListe.value = response.success && response.data ? response.data : []
     //console.log(typesObjetListe.value)
 }
@@ -139,6 +145,9 @@ const recherche = async (): Promise<void> => {
             nombremaximumretour: nombreMaximumRetour.value
         }
         const response: ApiResponseOL = await getObjetsListe(ssServer.value, ssPage.value, JSON.stringify(oCritere))
+        if (response.success === false) {
+            messageErreur.value = response.message
+        }
         const returnListe: Objet[] = response.success && response.data ? response.data : []
         if (returnListe.length < nombreMaximumRetour.value) {
         libelleListe.value = `Choix objets (${returnListe.length})`

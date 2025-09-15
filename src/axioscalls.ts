@@ -232,8 +232,8 @@ export async function getObjetsListe(server: string = '', page: string, jsonCrit
 
 function traiteAxiosError<T>(error: AxiosError): ApiResponse<T> {
     let msgErr: string = ''
-    if (error.response) {
-        msgErr = `${error.response.data}<br>${error.response.status}<br>${error.response.headers}`
+   if (error.response) {
+        msgErr = `${error.response.data}\nstatus: ${error.response.status}\n${error.response.headers}`
     } else if (error.request.responseText) {
         msgErr = error.request.responseText
     } else {
@@ -243,5 +243,6 @@ function traiteAxiosError<T>(error: AxiosError): ApiResponse<T> {
         "success": false,
         "message": `ERREUR. ${msgErr}`,
     }
+    console.log(respData)
     return respData
 }

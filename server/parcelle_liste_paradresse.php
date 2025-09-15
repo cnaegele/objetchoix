@@ -2,7 +2,7 @@
 require_once 'gdt/cldbgoeland.php';
 header("Access-Control-Allow-Origin: *");
 $bParamsOk = true;
-$msgParamsKO = '';
+$msgErreur = '';
 if (isset($_GET['jsoncriteres'])) {
     $jsonCriteres = $_GET['jsoncriteres'];
     $oCriteres = json_decode($jsonCriteres, false);
@@ -11,21 +11,21 @@ if (isset($_GET['jsoncriteres'])) {
         if (ctype_digit((string)$idAdresse) || is_int($idAdresse)) {
             if ($idAdresse < 0 || $idAdresse > 9999999) {
                 $bParamsOk = false;
-                $msgParamsKO .= ' idadresse hors limite';
+                $msgErreur = 'paramètre idadresse hors limite';
             }
         } else {
             $bParamsOk = false;
-            $msgParamsKO .= ' idadresse non numérique';
+            $msgErreur = 'paramètre idadresse non numérique';
         }    } else {
         $bParamsOk = false;
-        $msgParamsKO .= ' idadresse manquant';
+        $msgErreur = 'paramètre idadresse manquant';
     }
     $bActif = '1';
     if (isset($oCriteres->bactif)) {
         $bActif = strval($oCriteres->bactif);
         if ($bActif != '1' && $bActif != '0') {
             $bParamsOk = false;
-            $msgParamsKO .= ' bactif invalide';
+            $msgErreur .= 'paramètre bactif invalide ';
         }
     }
     $bStandard = '1';
@@ -33,7 +33,7 @@ if (isset($_GET['jsoncriteres'])) {
         $bStandard = strval($oCriteres->bstandard);
         if ($bStandard != '1' && $bStandard != '0') {
             $bParamsOk = false;
-            $msgParamsKO .= ' bstandard invalide';
+            $msgErreur .= 'paramètre bstandard invalide ';
         }
     }
     $bDDP = '1';
@@ -41,7 +41,7 @@ if (isset($_GET['jsoncriteres'])) {
         $bDDP = strval($oCriteres->bddp);
         if ($bDDP != '1' && $bDDP != '0') {
             $bParamsOk = false;
-            $msgParamsKO .= ' bddp invalide';
+            $msgErreur .= 'paramètre bddp invalide ';
         }
     }
     $bPPE = '1';
@@ -49,7 +49,7 @@ if (isset($_GET['jsoncriteres'])) {
         $bPPE = strval($oCriteres->bppe);
         if ($bPPE != '1' && $bPPE != '0') {
             $bParamsOk = false;
-            $msgParamsKO .= ' bppe invalide';
+            $msgErreur .= 'paramètre bppe invalide ';
         }
     }
     $bCoPr = '1';
@@ -57,7 +57,7 @@ if (isset($_GET['jsoncriteres'])) {
         $bCoPr = strval($oCriteres->bcopr);
         if ($bCoPr != '1' && $bPPE != '0') {
             $bParamsOk = false;
-            $msgParamsKO .= ' bcopr invalide';
+            $msgErreur .= 'paramètre bcopr invalide ';
         }
     }
     $typeRetourSP = '';
@@ -66,7 +66,7 @@ if (isset($_GET['jsoncriteres'])) {
     }
 } else {
     $bParamsOk = false;
-    $msgParamsKO .= ' paramètres json manquant';
+    $msgErreur = 'GET jsoncriteres manquant';
 }
 if ($bParamsOk) {
     $sSql = "cn_parcelle_liste_paradresse $idAdresse, $bActif, $bStandard, $bDDP, $bPPE, $bCoPr, '$typeRetourSP'";
@@ -75,11 +75,12 @@ if ($bParamsOk) {
     $bret = $dbgo->queryRetJson2($sSql);
     if ($bret === true) {
         echo $dbgo->resString;
-        unset($dbgo);
     } else {
-        echo '{"message" : "parcelle_liste_paradresse:' . $dbgo->resErreur . '"}';
-        unset($dbgo);
+        $msgErreur = 'parcelle_liste_paradresse: ' . $dbgo->resErreur;
     }
-} else {
-    echo '{"message" : "parcelle_liste_paradresse:paramètres invalides' . $msgParamsKO . '"}';;
+    unset($dbgo);
+}
+if ($msgErreur != '') {
+    http_response_code(400);
+    echo $msgErreur;
 }
